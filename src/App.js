@@ -7,7 +7,7 @@ class App extends Component{
     super(props)
     this.state = {
         images: [],
-        DataisLoaded: false,
+        isLoading: false,
         SearchInput:"",
     };
   }
@@ -29,6 +29,7 @@ class App extends Component{
 
   fetchData =() => {
     const accessKey = 'es37JP2CPHHDWaI8nYzXcKOuFVy_dmOBvE8JQXblu3Q';
+    this.setState({isLoading:true})
     const { SearchInput} = this.state;
     const apiUrl = `https://api.unsplash.com/search/photos?query=${SearchInput}&client_id=${accessKey}`;
 
@@ -36,6 +37,7 @@ class App extends Component{
       .then((response) => response.json())
       .then((data) => {
         this.setState({ images: data.results });
+        this.setState({isLoading:false})
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -43,7 +45,7 @@ class App extends Component{
   };
 
   render(){
-    const {SearchInput}=this.state
+    const {SearchInput,images,isLoading}=this.state
     return(
       <div className="container">
         <h1 className="heading">Search For The Image</h1>
@@ -58,7 +60,17 @@ class App extends Component{
             />
             </button>
         </div>
-        <p>{SearchInput}</p>
+        {isLoading? <p>Loading.....</p>:<div className='images'>
+            {images.map((image) => (
+              <img
+                key={image.id}
+                src={image.urls.small}
+                alt={image.alt_description}
+                className='image'
+              />
+            ))}
+          </div>}
+        
       </div>
     )
   }
